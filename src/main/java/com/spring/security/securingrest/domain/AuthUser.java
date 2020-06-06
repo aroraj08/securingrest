@@ -1,10 +1,8 @@
 package com.spring.security.securingrest.domain;
 
 import lombok.*;
-import org.hibernate.annotations.Fetch;
-import org.springframework.security.core.GrantedAuthority;
-
 import javax.persistence.*;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -12,18 +10,19 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class AuthUser extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private String password;
     private String username;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "authUser", fetch = FetchType.EAGER)
-    private Set<Resource> authorities;
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "user_role",
+            joinColumns =  @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id"))
+    private Set<Role> roles = new HashSet<>();
 
     private boolean accountNonExpired;
     private boolean accountNonLocked;
